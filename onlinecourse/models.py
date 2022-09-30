@@ -136,9 +136,8 @@ class Choice(models.Model):
     question_id = models.ForeignKey(Question, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Choice Text: " + self.choice_text + "," + \
-               "Is Correct: " + str(self.is_correct) + "," + \
-               "Question ID: " + str(self.question_id)
+        return "Choice Text: " + self.choice_text
+        
 # <HINT> The submission model
 # One enrollment could have multiple submission
 # One submission could have multiple choices
@@ -146,9 +145,5 @@ class Choice(models.Model):
 class Submission(models.Model):
    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
    choices = models.ManyToManyField(Choice)
-
-   def __str__(self):
-        return "Enrollment: " + str(self.enrollment) + "," + \
-               "Choices: " + str(self.choices)
    
 #    Other fields and methods you would like to design
