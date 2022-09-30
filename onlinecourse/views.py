@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.views import generic
 from django.contrib.auth import login, logout, authenticate
 import logging
+import math
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 # Create your views here.
@@ -138,13 +139,18 @@ def extract_answers(request):
         # For each selected choice, check if it is a correct answer or not
         # Calculate the total score
 def show_exam_result(request, course_id, submission_id):
+    context={}
     course = Course.objects.get(pk = course_id)
-    choices = Submission.objects.filter(pk=submission_id).values('choices__id')
+    choices = Submission.objects.filter(pk=submission_id).values_list('choices__id', flat=True)
+    grade = 0
+    i = 0
     for selected in choices:
-        selected_choice = Choice.objects.get(pk = selected)
-        is_correct = Submission.objects.filter(pk=selected).values('choices__is_correct')
+        selected_choice = Choice.objects.get(pk = submission_id)
+        is_correct = Submission.objects.filter(pk = submission_id).values_list('choices__is_correct', flat=True)[i]
         grade = grade + is_correct
+        i=i+1
+    grade = (grade / 6) * 100
     context['course'] = course
     context['choices'] = selected_choice
-    context['grade'] = grade
+    context['grade'] = math.floor(grade)
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
