@@ -141,16 +141,16 @@ def extract_answers(request):
 def show_exam_result(request, course_id, submission_id):
     context={}
     course = Course.objects.get(pk = course_id)
-    choices = Submission.objects.filter(pk=submission_id).values_list('choices__id', flat=True)
+    submission = Submission.objects.get(pk=submission_id)
     grade = 0
-    i = 0
-    for selected in choices:
-        selected_choice = Choice.objects.get(pk = submission_id)
-        is_correct = Submission.objects.filter(pk = submission_id).values_list('choices__is_correct', flat=True)[i]
-        grade = grade + is_correct
-        i=i+1
+    choice_text = []
+    choice_id = []
+    for selected in submission.choices.all():
+        choice_text.append(selected.choice_text)
+        choice_id.append(selected.id)
+        grade = grade + selected.is_correct
     grade = (grade / 6) * 100
     context['course'] = course
-    context['choices'] = selected_choice
+    context['choices'] = choice_id
     context['grade'] = math.floor(grade)
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
